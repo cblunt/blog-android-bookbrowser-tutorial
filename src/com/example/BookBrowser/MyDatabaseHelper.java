@@ -3,9 +3,14 @@ package com.example.BookBrowser;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.provider.BaseColumns;
 
 public class MyDatabaseHelper extends SQLiteOpenHelper {
+
+  public enum Query {
+      BooksWithAuthor
+  }
 
   private static final String DATABASE_NAME = "bookbrowser.db";
   private static final int DATABASE_VERSION = 1;
@@ -42,6 +47,13 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     db.execSQL("DROP TABLE IF EXISTS " + CategoriesTable.TABLE_NAME);
     db.execSQL("DROP TABLE IF EXISTS " + AuthorsTable.TABLE_NAME);
     db.execSQL("DROP TABLE IF EXISTS " + BooksTable.TABLE_NAME);
+  }
+
+  public void query(Query query) {
+      switch (query) {
+          case BooksWithAuthor:
+            SQLiteQueryBuilder builder ;
+      }
   }
 
   public static class BooksTable {

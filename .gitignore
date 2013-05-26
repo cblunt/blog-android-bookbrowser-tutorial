@@ -1,1 +1,8 @@
 out/
+*.log
+*.tmp
+gen/
+bin/
+target/
+.idea
+build-log.xml
