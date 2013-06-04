@@ -2,9 +2,11 @@ package com.example.BookBrowser;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.provider.BaseColumns;
 
 public class MyDatabaseHelper extends SQLiteOpenHelper {
@@ -77,6 +79,18 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     values.put(BooksTable.COL_CATEGORY_ID, categoryId);
 
     return insert(BooksTable.TABLE_NAME, values);
+  }
+
+  public Cursor queryBooks(String selection, String[] selectionArgs, String sortOrder) {
+    String[] projection = {BooksTable.FULL_ID, BooksTable.FULL_TITLE, AuthorsTable.FULL_FIRST_NAME, AuthorsTable.FULL_LAST_NAME, CategoriesTable.FULL_NAME };
+
+    SQLiteQueryBuilder sqLiteQueryBuilder = new SQLiteQueryBuilder();
+    sqLiteQueryBuilder.setTables(BooksTable.TABLE_NAME
+        + " LEFT OUTER JOIN " + CategoriesTable.TABLE_NAME + " ON (" + BooksTable.FULL_CATEGORY_ID + " = " + CategoriesTable.FULL_ID + ")"
+        + " LEFT OUTER JOIN " + AuthorsTable.TABLE_NAME + " ON (" + BooksTable.FULL_AUTHOR_ID+ " = " + AuthorsTable.FULL_ID + ")"
+    );
+
+    return sqLiteQueryBuilder.query(getReadableDatabase(), projection, selection, selectionArgs, null, null, sortOrder);
   }
 
   public static class BooksTable {
