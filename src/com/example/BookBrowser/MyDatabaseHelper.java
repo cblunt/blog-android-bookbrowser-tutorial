@@ -1,6 +1,8 @@
 package com.example.BookBrowser;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
@@ -17,7 +19,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
   @Override
   public void onCreate(SQLiteDatabase db) {
     db.execSQL("CREATE TABLE " + BooksTable.TABLE_NAME + " ("
-        + BooksTable.COL_ID + " INTEGER AUTOINCREMENT PRIMARY KEY"
+        + BooksTable.COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT"
         + ", " + BooksTable.COL_TITLE + " TEXT NOT NULL"
         + ", " + BooksTable.COL_ISBN + " TEXT NOT NULL"
         + ", " + BooksTable.COL_AUTHOR_ID + " INTEGER NOT NULL"
@@ -25,13 +27,13 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         + ");");
 
     db.execSQL("CREATE TABLE " + AuthorsTable.TABLE_NAME + " ("
-        + AuthorsTable.COL_ID + " INTEGER AUTOINCREMENT PRIMARY KEY"
+        + AuthorsTable.COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT"
         + ", " + AuthorsTable.COL_FIRST_NAME + " TEXT NOT NULL"
         + ", " + AuthorsTable.COL_LAST_NAME + " TEXT NOT NULL"
         + ");");
 
     db.execSQL("CREATE TABLE " + CategoriesTable.TABLE_NAME + " ("
-        + CategoriesTable.COL_ID + " INTEGER AUTOINCREMENT PRIMARY KEY"
+        + CategoriesTable.COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT"
         + ", " + CategoriesTable.COL_NAME + " TEXT NOT NULL"
         + ");");
   }
@@ -42,6 +44,39 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     db.execSQL("DROP TABLE IF EXISTS " + CategoriesTable.TABLE_NAME);
     db.execSQL("DROP TABLE IF EXISTS " + AuthorsTable.TABLE_NAME);
     db.execSQL("DROP TABLE IF EXISTS " + BooksTable.TABLE_NAME);
+  }
+
+  public long insert(String tableName, ContentValues values) {
+    return getWritableDatabase().insert(tableName, null, values);
+  }
+
+  public long count(String tableName) {
+    return DatabaseUtils.queryNumEntries(getReadableDatabase(), tableName, null, null);
+  }
+
+  public long insertCategory(String name) {
+    ContentValues values = new ContentValues();
+    values.put(CategoriesTable.COL_NAME, name);
+
+    return insert(CategoriesTable.TABLE_NAME, values);
+  }
+
+  public long insertAuthor(String firstName, String lastName) {
+    ContentValues values = new ContentValues();
+    values.put(AuthorsTable.COL_FIRST_NAME, firstName);
+    values.put(AuthorsTable.COL_LAST_NAME, lastName);
+
+    return insert(AuthorsTable.TABLE_NAME, values);
+  }
+
+  public long insertBook(String title, String isbn, long authorId, long categoryId) {
+    ContentValues values = new ContentValues();
+    values.put(BooksTable.COL_TITLE, title);
+    values.put(BooksTable.COL_ISBN, isbn);
+    values.put(BooksTable.COL_AUTHOR_ID, authorId);
+    values.put(BooksTable.COL_CATEGORY_ID, categoryId);
+
+    return insert(BooksTable.TABLE_NAME, values);
   }
 
   public static class BooksTable {
@@ -55,11 +90,11 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_CATEGORY_ID = "category_id";
 
     public static final String FULL_ID = TABLE_NAME + "." + BaseColumns._ID;
-    public static final String FULL_TITLE = TABLE_NAME + "." + "title";
-    public static final String FULL_ISBN = TABLE_NAME + "." + "isbn";
+    public static final String FULL_TITLE = TABLE_NAME + "." + COL_TITLE;
+    public static final String FULL_ISBN = TABLE_NAME + "." + COL_ISBN;
 
-    public static final String FULL_AUTHOR_ID = TABLE_NAME + "." + "author_id";
-    public static final String FULL_CATEGORY_ID = TABLE_NAME + "." + "category_id";
+    public static final String FULL_AUTHOR_ID = TABLE_NAME + "." + COL_AUTHOR_ID;
+    public static final String FULL_CATEGORY_ID = TABLE_NAME + "." + COL_CATEGORY_ID;
   }
 
   public static class AuthorsTable {
@@ -67,11 +102,11 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
     public static final String COL_ID = BaseColumns._ID;
     public static final String COL_FIRST_NAME = "first_name";
-    public static final String COL_LAST_NAME = "first_name";
+    public static final String COL_LAST_NAME = "last_name";
 
     public static final String FULL_ID = TABLE_NAME + "." + BaseColumns._ID;
-    public static final String FULL_FIRST_NAME = TABLE_NAME + "." + "first_name";
-    public static final String FULL_LAST_NAME = TABLE_NAME + "." + "last_name";
+    public static final String FULL_FIRST_NAME = TABLE_NAME + "." + COL_FIRST_NAME;
+    public static final String FULL_LAST_NAME = TABLE_NAME + "." + COL_LAST_NAME;
   }
 
   public static class CategoriesTable {
@@ -81,6 +116,6 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_NAME = "name";
 
     public static final String FULL_ID = TABLE_NAME + "." + BaseColumns._ID;
-    public static final String FULL_NAME = TABLE_NAME + "." + "name";
+    public static final String FULL_NAME = TABLE_NAME + "." + COL_NAME;
   }
 }
